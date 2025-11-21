@@ -1,5 +1,6 @@
 #! /usr/bin/bash
 
+#ddev-generated
 ## Description: Sync host's global git configs to container's global configs
 ## Usage: git-sync
 ## Example: "ddev git-sync"
