@@ -7,19 +7,15 @@
 ## OSTypes: darwin,linux
 ## HostBinaryExists: "/usr/bin/git"
 
-HOST_GLOBAL_GIT_CONFIG=~/.gitconfig
+git config --global --list | while read -r config_item
 
-if [ -f "$HOST_GLOBAL_GIT_CONFIG" ]; then
-  git config --file "$HOST_GLOBAL_GIT_CONFIG" --list | while read -r config_item
+do
+  KEY="${config_item%%=*}"
+  VALUE="${config_item#*=}"
 
-  do
-    KEY="${config_item%%=*}"
-    VALUE="${config_item#*=}"
-
-    if ! [ "$KEY" = "credential.helper" ]; then
+  if ! [ "$KEY" = "credential.helper" ]; then
     ddev exec git config --global "$KEY" "$VALUE" < /dev/null
-    fi
-  done
+  fi
+done
 
-  echo "Host global git configs synced to container"
-fi
+echo "Host global git configs synced to container"
