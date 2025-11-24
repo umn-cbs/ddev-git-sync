@@ -16,7 +16,7 @@ setup() {
   set -eu -o pipefail
 
   # Override this variable for your add-on:
-  export GITHUB_REPO=ddev/ddev-addon-template
+  export GITHUB_REPO=umn-cbs/ddev-git-sync
 
   TEST_BREW_PREFIX="$(brew --prefix 2>/dev/null || true)"
   export BATS_LIB_PATH="${BATS_LIB_PATH}:${TEST_BREW_PREFIX}/lib:/usr/lib/bats"
@@ -36,6 +36,9 @@ setup() {
   assert_success
   run ddev start -y
   assert_success
+
+  git config --global "ddev-git-sync-test.keyOne" "Value One"
+  git config --global "ddev-git-sync-test.keyTwo" "Value Two"
 }
 
 health_checks() {
@@ -50,10 +53,23 @@ health_checks() {
   DDEV_DEBUG=true run ddev launch
   assert_success
   assert_output --partial "FULLURL https://${PROJNAME}.ddev.site"
+
+  git config --global --list | while read -r config_item
+  do
+    KEY="${config_item%%=*}"
+    HOST_VALUE="${config_item#*=}"
+
+    if ! [ "$KEY" = "credential.helper" ]; then
+      CONTAINER_VALUE="$(ddev exec git config --global --get "$KEY" < /dev/null)"
+      assert_equal "$KEY:$CONTAINER_VALUE" "$KEY:$HOST_VALUE"
+    fi
+  done
 }
 
 teardown() {
   set -eu -o pipefail
+  git config --global --remove-section "ddev-git-sync-test"
+
   ddev delete -Oy "${PROJNAME}" >/dev/null 2>&1
   # Persist TESTDIR if running inside GitHub Actions. Useful for uploading test result artifacts
   # See example at https://github.com/ddev/github-action-add-on-test#preserving-artifacts
