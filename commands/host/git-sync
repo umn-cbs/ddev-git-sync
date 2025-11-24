@@ -17,7 +17,7 @@ if [ -f "$HOST_GLOBAL_GIT_CONFIG" ]; then
     VALUE="${config_item#*=}"
 
     if ! [ "$KEY" = "credential.helper" ]; then
-      ddev exec git config --global "$KEY" "$VALUE"
+    ddev exec git config --global "$KEY" "$VALUE" < /dev/null
     fi
   done
 
