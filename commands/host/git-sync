@@ -1,21 +1,21 @@
-#! /usr/bin/bash
+#! /usr/bin/env bash
 
 #ddev-generated
 ## Description: Sync host's global git configs to container's global configs
 ## Usage: git-sync
 ## Example: "ddev git-sync"
-## OSTypes: darwin,linux
-## HostBinaryExists: "/usr/bin/git"
 
-git config --global --list | while read -r config_item
+if [ -e "$HOME/.gitconfig" ]; then
+  git config --global --list | while read -r config_item
 
-do
-  KEY="${config_item%%=*}"
-  VALUE="${config_item#*=}"
+  do
+    KEY="${config_item%%=*}"
+    VALUE="${config_item#*=}"
 
-  if ! [ "$KEY" = "credential.helper" ]; then
-    ddev exec git config --global "$KEY" "$VALUE" < /dev/null
-  fi
-done
+    if ! [ "$KEY" = "credential.helper" ]; then
+      ddev exec git config --global "$KEY" "$VALUE" < /dev/null
+    fi
+  done
 
-echo "Host global git configs synced to container"
+  echo "Host global git configs synced to container"
+fi
