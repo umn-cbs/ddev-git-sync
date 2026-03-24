@@ -1,0 +1,14 @@
+{
+    "version": "0.2",
+    "language": "en",
+    "words": [
+        "ddev",
+        "FULLURL",
+        "mktemp",
+        "NONINTERACTIVE",
+        "pipefail",
+        "PROJNAME",
+        "TESTDIR"
+    ],
+    "flagWords": []
+}
